@@ -1,5 +1,6 @@
 package com.hanu.DailyFrame.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,5 +24,6 @@ public class Media {
 
     @ManyToOne
     @JoinColumn(name = "entry_id")
+    @JsonIgnore
     private DairyEntries dairyEntry;
 }

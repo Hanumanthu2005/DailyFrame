@@ -1,5 +1,6 @@
 package com.hanu.DailyFrame.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,4 +24,5 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<DairyEntries> dairyEntries;
+
 }
