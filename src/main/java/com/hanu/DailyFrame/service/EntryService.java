@@ -1,21 +1,14 @@
 package com.hanu.DailyFrame.service;
 
-import com.hanu.DailyFrame.models.DairyEntries;
-import com.hanu.DailyFrame.models.User;
-import com.hanu.DailyFrame.repo.EntryRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.hanu.DailyFrame.models.Entry;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
-@Service
-public class EntryService {
+public interface EntryService {
 
-    @Autowired
-    EntryRepo entryRepo;
+    Entry save(Entry entry);
 
-    public List<DairyEntries> getByUser(Long id) {
-        return entryRepo.findByUserId(id);
-    }
+    Optional<Entry> getEntry(Long id);
+
+    Entry updateEntry(Entry entry);
 }

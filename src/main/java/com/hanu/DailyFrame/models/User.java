@@ -23,6 +23,6 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<DairyEntries> dairyEntries;
+    List<Entry> dairyEntries;
 
 }

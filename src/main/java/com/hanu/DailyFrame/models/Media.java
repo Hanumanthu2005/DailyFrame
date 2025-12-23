@@ -25,5 +25,5 @@ public class Media {
     @ManyToOne
     @JoinColumn(name = "entry_id")
     @JsonIgnore
-    private DairyEntries dairyEntry;
+    private Entry dairyEntry;
 }
