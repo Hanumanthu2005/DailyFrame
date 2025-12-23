@@ -4,6 +4,10 @@ import com.hanu.DailyFrame.models.Entry;
 import com.hanu.DailyFrame.repo.EntryRepo;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +37,12 @@ public class EntryServiceImp implements EntryService {
         entry.setMediaList(updatedEntry.getMediaList());
 
         return entryRepo.save(entry);
+    }
+
+    public List<Entry> getByDate(LocalDate date) {
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.atTime(LocalTime.MAX);
+        return entryRepo.findByCreatedAtBetween(startDate, endDate);
     }
 
 }

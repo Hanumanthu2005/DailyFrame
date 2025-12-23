@@ -24,14 +24,20 @@ public class Entry {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private LocalDateTime createdTime;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "dairyEntry", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "dairyEntry", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Media> mediaList;
 
 }
