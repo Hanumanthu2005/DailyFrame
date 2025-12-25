@@ -34,7 +34,7 @@ public class EntryController {
     }
 
     @PutMapping("/update/{id}")
-public ResponseEntity<Entry> updateEntry(@PathVariable Long id, @RequestBody Entry entry) {
+    public ResponseEntity<Entry> updateEntry(@PathVariable Long id, @RequestBody Entry entry) {
         entry.setId(id);
         Entry resultEntry = entryService.updateEntry(entry);
         return ResponseEntity.ok(resultEntry);

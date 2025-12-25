@@ -1,8 +1,11 @@
 package com.hanu.DailyFrame.service.imp;
 
 import com.hanu.DailyFrame.models.Entry;
+import com.hanu.DailyFrame.models.User;
 import com.hanu.DailyFrame.repo.EntryRepo;
+import com.hanu.DailyFrame.repo.UserRepo;
 import com.hanu.DailyFrame.service.EntryService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,9 +18,11 @@ import java.util.Optional;
 public class EntryServiceImp implements EntryService {
 
     private final EntryRepo entryRepo;
+    private final UserRepo userRepo;
 
-    public EntryServiceImp(EntryRepo entryRepo) {
+    public EntryServiceImp(EntryRepo entryRepo, UserRepo userRepo) {
         this.entryRepo = entryRepo;
+        this.userRepo = userRepo;
     }
 
     public Optional<Entry> getEntry(Long id) {
@@ -25,6 +30,12 @@ public class EntryServiceImp implements EntryService {
     }
 
     public Entry save(Entry entry) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("user not found"));
+
+        entry.setUser(user);
         return entryRepo.save(entry);
     }
 

@@ -5,6 +5,7 @@ import com.hanu.DailyFrame.repo.UserRepo;
 import com.hanu.DailyFrame.request.LoginRequest;
 import com.hanu.DailyFrame.request.SignupRequest;
 import com.hanu.DailyFrame.response.LoginResponse;
+import com.hanu.DailyFrame.secirity.JwtUtil;
 import com.hanu.DailyFrame.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,14 @@ import java.time.LocalDateTime;
 @Service
 public class UserServiceImp implements UserService {
 
-    final UserRepo userRepo;
-    final PasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserServiceImp(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserServiceImp(UserRepo userRepo, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -39,15 +42,14 @@ public class UserServiceImp implements UserService {
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Email doesnot exist"));
+                .orElseThrow(() -> new RuntimeException("Email not found"));
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
 
-        LoginResponse response = new LoginResponse(user.getId(), user.getFullName(), user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
 
-        System.out.println(response.getFullName());
-        return response;
+        return new LoginResponse(token, user.getEmail());
     }
 }
