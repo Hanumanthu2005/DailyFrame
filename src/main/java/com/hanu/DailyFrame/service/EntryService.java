@@ -1,6 +1,7 @@
 package com.hanu.DailyFrame.service;
 
 import com.hanu.DailyFrame.models.Entry;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,4 +17,6 @@ public interface EntryService {
     Entry updateEntry(Entry entry);
 
     List<Entry> getByDate(LocalDate date);
+
+    List<Entry> getByUser();
 }

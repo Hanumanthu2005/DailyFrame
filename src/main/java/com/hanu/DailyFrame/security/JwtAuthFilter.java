@@ -1,4 +1,4 @@
-package com.hanu.DailyFrame.secirity;
+package com.hanu.DailyFrame.security;
 
 
 import jakarta.servlet.FilterChain;

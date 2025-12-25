@@ -57,4 +57,13 @@ public class EntryServiceImp implements EntryService {
         return entryRepo.findByCreatedAtBetween(startDate, endDate);
     }
 
+    public List<Entry> getByUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid user"));
+
+        return entryRepo.findByUserId(user.getId());
+    }
+
 }

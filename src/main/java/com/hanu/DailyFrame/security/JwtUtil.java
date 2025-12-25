@@ -1,4 +1,4 @@
-package com.hanu.DailyFrame.secirity;
+package com.hanu.DailyFrame.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

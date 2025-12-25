@@ -20,6 +20,11 @@ public class EntryController {
         this.entryService = entryService;
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<Entry>> getByUser() {
+        return ResponseEntity.ok(entryService.getByUser());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Entry> getEntry(@PathVariable Long id) {
         Entry entry = entryService.getEntry(id)
