@@ -1,7 +1,8 @@
-package com.hanu.DailyFrame.service;
+package com.hanu.DailyFrame.service.imp;
 
 import com.hanu.DailyFrame.models.Entry;
 import com.hanu.DailyFrame.repo.EntryRepo;
+import com.hanu.DailyFrame.service.EntryService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
