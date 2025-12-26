@@ -2,6 +2,7 @@ package com.hanu.DailyFrame.controller;
 
 import com.hanu.DailyFrame.models.User;
 import com.hanu.DailyFrame.request.LoginRequest;
+import com.hanu.DailyFrame.request.PasswordChange;
 import com.hanu.DailyFrame.request.SignupRequest;
 import com.hanu.DailyFrame.response.LoginResponse;
 import com.hanu.DailyFrame.service.UserService;
@@ -26,8 +27,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        System.out.println("inside login controller");
         LoginResponse response = userService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChange newPassword) {
+        User response = userService.changePassword(newPassword);
+        return ResponseEntity.ok("Password updated successfully");
     }
 }

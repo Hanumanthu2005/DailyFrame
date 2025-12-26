@@ -3,13 +3,16 @@ package com.hanu.DailyFrame.service.imp;
 import com.hanu.DailyFrame.models.User;
 import com.hanu.DailyFrame.repo.UserRepo;
 import com.hanu.DailyFrame.request.LoginRequest;
+import com.hanu.DailyFrame.request.PasswordChange;
 import com.hanu.DailyFrame.request.SignupRequest;
 import com.hanu.DailyFrame.response.LoginResponse;
 import com.hanu.DailyFrame.security.JwtUtil;
 import com.hanu.DailyFrame.service.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -51,5 +54,28 @@ public class UserServiceImp implements UserService {
         String token = jwtUtil.generateToken(user.getEmail());
 
         return new LoginResponse(token, user.getEmail());
+    }
+
+    @Override
+    public User changePassword(PasswordChange newPassword) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if(passwordEncoder.matches(newPassword.getOldPassword(), user.getPassword())) {
+            if(Objects.equals(newPassword.getOldPassword(), newPassword.getNewPassword())) {
+                throw new RuntimeException("New password must not be the old password");
+            }
+
+            if(!Objects.equals(newPassword.getNewPassword(), newPassword.getConfirmPassword())) {
+                throw new RuntimeException("Confirmation password was different from the new password");
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
+
+        }
+        return userRepo.save(user);
     }
 }
