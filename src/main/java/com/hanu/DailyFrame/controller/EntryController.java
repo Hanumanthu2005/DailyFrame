@@ -1,11 +1,16 @@
 package com.hanu.DailyFrame.controller;
 
 import com.hanu.DailyFrame.models.Entry;
+import com.hanu.DailyFrame.models.User;
+import com.hanu.DailyFrame.request.EntryRequest;
 import com.hanu.DailyFrame.service.EntryService;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.Authenticator;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,8 +38,8 @@ public class EntryController {
     }
 
     @PostMapping("/createEntry")
-    public ResponseEntity<Entry> createEntry(@RequestBody Entry entry) {
-        Entry savedEntry = entryService.save(entry);
+    public ResponseEntity<?> createEntry(@RequestBody EntryRequest entry, Authentication authentication) {
+        Entry savedEntry = entryService.save(entry, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEntry);
     }
 

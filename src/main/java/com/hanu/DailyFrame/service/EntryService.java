@@ -1,16 +1,16 @@
 package com.hanu.DailyFrame.service;
 
 import com.hanu.DailyFrame.models.Entry;
-import org.jspecify.annotations.Nullable;
+import com.hanu.DailyFrame.request.EntryRequest;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface EntryService {
 
-    Entry save(Entry entry);
+    Entry save(EntryRequest entry, Authentication authentication);
 
     Optional<Entry> getEntry(Long id);
 

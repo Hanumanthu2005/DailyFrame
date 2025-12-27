@@ -13,7 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import java.io.IOException;
 
-
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -29,33 +28,52 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             String token = authHeader.substring(7);
             String email = jwtUtil.extractEmail(token);
 
-            if(email != null &&
-                    SecurityContextHolder.getContext()
-                            .getAuthentication() == null) {
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            if (email != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                if(jwtUtil.validateToken(token)) {
+                UserDetails userDetails =
+                        customUserDetailsService.loadUserByUsername(email);
+
+                if (jwtUtil.validateToken(token)
+                        && userDetails.getUsername().equals(email)) {
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
                                     userDetails.getAuthorities()
                             );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authToken);
                 }
             }
         }
+
         filterChain.doFilter(request, response);
+    }
+
+    // 👇 THIS WAS MISSING
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return path.startsWith("/auth/")
+                || request.getMethod().equalsIgnoreCase("OPTIONS");
     }
 }
