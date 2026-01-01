@@ -6,11 +6,14 @@ import com.hanu.DailyFrame.request.LoginRequest;
 import com.hanu.DailyFrame.request.PasswordChange;
 import com.hanu.DailyFrame.request.SignupRequest;
 import com.hanu.DailyFrame.response.LoginResponse;
+import com.hanu.DailyFrame.response.ProfileResponse;
 import com.hanu.DailyFrame.security.JwtUtil;
 import com.hanu.DailyFrame.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -77,5 +80,22 @@ public class UserServiceImp implements UserService {
 
         }
         return userRepo.save(user);
+    }
+
+    public ProfileResponse getProfile() {
+        User user = getCurrentUser();
+        System.out.println("in auth service");
+        ProfileResponse response = new ProfileResponse();
+
+        response.setFullName(user.getFullName());
+        response.setEmail(user.getEmail());
+        response.setCreatedAt(user.getCreatedAt());
+
+        return response;
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
     }
 }

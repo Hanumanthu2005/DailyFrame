@@ -5,6 +5,7 @@ import com.hanu.DailyFrame.request.LoginRequest;
 import com.hanu.DailyFrame.request.PasswordChange;
 import com.hanu.DailyFrame.request.SignupRequest;
 import com.hanu.DailyFrame.response.LoginResponse;
+import com.hanu.DailyFrame.response.ProfileResponse;
 import com.hanu.DailyFrame.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,4 +37,10 @@ public class AuthController {
         User response = userService.changePassword(newPassword);
         return ResponseEntity.ok("Password updated successfully");
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<ProfileResponse> getProfile() {
+        return ResponseEntity.ok(userService.getProfile());
+    }
+
 }

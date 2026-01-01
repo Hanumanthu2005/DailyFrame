@@ -8,15 +8,12 @@ import com.hanu.DailyFrame.repo.MediaRepo;
 import com.hanu.DailyFrame.repo.UserRepo;
 import com.hanu.DailyFrame.request.EntryRequest;
 import com.hanu.DailyFrame.service.EntryService;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EntryServiceImp implements EntryService {
@@ -31,15 +28,28 @@ public class EntryServiceImp implements EntryService {
         this.mediaRepo = mediaRepo;
     }
 
-    public Optional<Entry> getEntry(Long id) {
-        return entryRepo.findById(id);
+    public Entry getEntry(Long id) {
+        User user = getCurrentUser();
+        Entry entry = entryRepo.findById(id).orElseThrow(() -> new RuntimeException("Entry not found"));
+        if(!user.getId().equals(entry.getUser().getId())) {
+            throw new RuntimeException("invalid user");
+        }
+        return entry;
     }
 
-    public Entry save(EntryRequest entry, Authentication authentication) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public void deleteEntry(Long id)  {
+        User user = getCurrentUser();
+        Entry entry = entryRepo.findById(id)
+                        .orElseThrow(() -> new RuntimeException("invalid Entry id"));
 
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+        if(!entry.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        entryRepo.delete(entry);
+    }
+
+    public Entry save(EntryRequest entry) {
+        User user = getCurrentUser();
 
         Entry res = new Entry();
 
@@ -67,14 +77,30 @@ public class EntryServiceImp implements EntryService {
         return savedEntry;
     }
 
-    public Entry updateEntry(Entry updatedEntry) {
+    public Entry updateEntry(Long id, EntryRequest updatedEntry) {
+        User user = getCurrentUser();
 
-        Entry entry = entryRepo.findById(updatedEntry.getId())
+        Entry entry = entryRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entry not found"));
+
+        if(!user.getId().equals(entry.getUser().getId())) {
+            throw  new RuntimeException("invalid user");
+        }
 
         entry.setTitle(updatedEntry.getTitle());
         entry.setContent(updatedEntry.getContent());
-        entry.setMediaList(updatedEntry.getMediaList());
+        entry.getMediaList().clear();
+
+        if(updatedEntry.getMediaUrls() != null) {
+            for(String url : updatedEntry.getMediaUrls()) {
+                Media media = new Media();
+                media.setUploadedAt(LocalDateTime.now());
+                media.setFileUrl(url);
+                media.setDairyEntry(entry);
+                mediaRepo.save(media);
+                entry.getMediaList().add(media);
+            }
+        }
 
         return entryRepo.save(entry);
     }
@@ -86,12 +112,14 @@ public class EntryServiceImp implements EntryService {
     }
 
     public List<Entry> getByUser() {
+        User user = getCurrentUser();
+        return entryRepo.findByUserId(user.getId());
+    }
+
+    private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid user"));
-
-        return entryRepo.findByUserId(user.getId());
+        return userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
     }
 
 }
