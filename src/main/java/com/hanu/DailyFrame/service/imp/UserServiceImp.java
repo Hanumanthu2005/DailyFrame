@@ -12,10 +12,7 @@ import com.hanu.DailyFrame.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -68,16 +65,7 @@ public class UserServiceImp implements UserService {
 
 
         if(passwordEncoder.matches(newPassword.getOldPassword(), user.getPassword())) {
-            if(Objects.equals(newPassword.getOldPassword(), newPassword.getNewPassword())) {
-                throw new RuntimeException("New password must not be the old password");
-            }
-
-            if(!Objects.equals(newPassword.getNewPassword(), newPassword.getConfirmPassword())) {
-                throw new RuntimeException("Confirmation password was different from the new password");
-            }
-
             user.setPassword(passwordEncoder.encode(newPassword.getNewPassword()));
-
         }
         return userRepo.save(user);
     }
