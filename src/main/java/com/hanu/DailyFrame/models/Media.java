@@ -25,4 +25,5 @@ public class Media {
     @JoinColumn(name = "entry_id")
     @JsonIgnore
     private Entry dairyEntry;
+
 }
