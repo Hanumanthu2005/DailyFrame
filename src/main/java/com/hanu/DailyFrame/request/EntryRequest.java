@@ -14,4 +14,9 @@ public class EntryRequest {
 
     private List<String> mediaUrls;
 
+    private Long collectionId;
+
+    private String newCollectionName;
+
+
 }

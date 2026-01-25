@@ -39,4 +39,8 @@ public class Entry {
     @OneToMany(mappedBy = "dairyEntry", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Media> mediaList;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id")
+    private Collection collection;
+
 }
