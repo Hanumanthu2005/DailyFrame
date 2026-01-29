@@ -115,33 +115,36 @@ public class EntryServiceImp implements EntryService {
 
     private Collection resolveCollection(EntryRequest request, User user) {
 
+        String newName = request.getNewCollectionName();
+
         if (request.getCollectionId() != null &&
-                request.getNewCollectionName() != null &&
-                !request.getNewCollectionName().isBlank()) {
-            throw new RuntimeException("Provide either collectionId or newCollectionName");
+                newName != null &&
+                !newName.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Provide either collectionId or newCollectionName"
+            );
         }
 
         if (request.getCollectionId() != null) {
             Collection collection = collectionRepo.findById(request.getCollectionId())
-                    .orElseThrow(() -> new RuntimeException("Collection not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Collection not found"));
 
             if (!collection.getUser().getId().equals(user.getId())) {
-                throw new RuntimeException("Unauthorized");
+                throw new IllegalArgumentException("Unauthorized");
             }
             return collection;
         }
 
-        if (request.getNewCollectionName() != null &&
-                !request.getNewCollectionName().isBlank()) {
-
+        if (newName != null && !newName.isBlank()) {
             Collection collection = new Collection();
-            collection.setName(request.getNewCollectionName().trim());
+            collection.setName(newName.trim());
             collection.setUser(user);
             return collectionRepo.save(collection);
         }
 
         return getDefaultCollection(user);
     }
+
 
     private Collection getDefaultCollection(User user) {
         return collectionRepo.findByUserAndName(user, "Personal")
